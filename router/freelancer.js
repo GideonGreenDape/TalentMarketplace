@@ -5,7 +5,8 @@ const connectDB = require('../mongoclient');
 const bcrypt = require('bcryptjs');
 const { editProfileValidationRules } = require('../formvalidators/editprofilevalidation');
 const projectValidationRules = require('../formvalidators/projectvalidation');
-const jobApplicationValidation = require('../formvalidators/jobapplicationvalidation')
+const {jobApplicationValidation} = require('../formvalidators/jobapplicationvalidation');
+const emailService= require('../emaildirectory/emailutility');
 const { ObjectId } = require('mongodb');
 
 
@@ -58,6 +59,14 @@ Freelancer.post('/api/createaccount', emailAndPasswordValidation(), validate, as
         await freelancerdata.insertOne({
             details: email
         })
+
+         // Send welcome email
+         try {
+            await emailService.sendWelcomeEmail(email, 'Freelancer');
+        } catch (emailError) {
+            console.error('Welcome email failed:', emailError);
+            // Don't return error - account was still created successfully
+        }
 
         res.status(201).json({
             success: true,

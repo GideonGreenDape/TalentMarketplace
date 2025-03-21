@@ -13,3 +13,5 @@ const projectValidationRules = () => {
         body('project.client').optional().isObject().withMessage('Client details must be an object')
     ];
 };
+
+module.exports= projectValidationRules;
